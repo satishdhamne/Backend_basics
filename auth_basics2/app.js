@@ -58,7 +58,7 @@ app.post("/login",passport.authenticate("local",{
     
 })
 
-app.get("/profile", (req, res) => {
+app.get("/profile", isLoggedIn , (req, res) => {
     res.render("profile");
 })
 
@@ -68,6 +68,13 @@ app.get("/logout", (req, res) => {
         res.redirect("/");
     })
 })
+
+function isLoggedIn (req, res, next){
+    if(req.isAuthenticated()){
+       return next();
+    }
+    res.redirect("/");
+}
 
 app.listen(port, () => {
     console.log(`server is listening on port ${port}`);
