@@ -51,11 +51,22 @@ app.post("/register", (req , res) =>{
 
 })
 
-app.post("/login",passport.authenticate("local",{
-    successRedirect: "/profile",
-    failuarRedirect: "/"
-}), (req, res) => {
+// app.post("/login",passport.authenticate("local",{
+//     successRedirect: "/profile",
+//     failuarRedirect: "/"
+// }), (req, res) => {})
+
     
+//manually handling the login
+app.post("/login", (req, res, next) => {
+    passport.authenticate("local", (err, user, info) => { //checks the credentials and can return error, user(object contains the users data) and info (info: stores the details of the error like why the user is failed to login like invalid username or password, too many attempts )
+        if(err) return next(err);
+        if(!user) return res.redirect("/login");
+        req.logIn(user, (err) => {  // creates the session and attaches the user object data into the session 
+            if(err) return next(err);
+            return res.redirect("/profile");
+        })
+    })(req, res, next); //calling immedietly req.lonIn() by passing req, res and next as arguments
 })
 
 app.get("/profile", isLoggedIn , (req, res) => {
